@@ -1,0 +1,12 @@
+- git:
+    uri: git@github.com:hku-mars/r3live.git
+    local-name: r3live
+    version: master
+- git:
+    uri: git@github.com:ziv-lin/livox_ros_driver_for_R2LIVE.git
+    local-name: livox_ros_driver
+    version: main
+- git:
+    uri: git@github.com:hku-mars/livox_camera_calib.git
+    local-name: livox_camera_calib
+    version: master

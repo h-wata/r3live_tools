@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <arg name="path" default="$(find r3live_tools)"/>
+  <arg name="file_name" default=""/>
+  <arg name="image_topic" default="hikrobot_camera/rgb"/>
+  <arg name="pointcloud_topic" default="/livox/lidar"/>
+  <node name="rosbag_play" pkg="rosbag" type="play" args="-d 2 -u 4 $(arg path)/bags/$(arg file_name)">
+    </node>
+  <node name="extract" pkg="image_view" type="extract_images" respawn="false" output="screen">
+    <remap from="image" to="$(arg image_topic)"/>
+    <param name="filename_format" value="$(arg path)/calib/images/frame%d.jpg"/>
+  </node>
+  <node name="convert_pcd" pkg="pcl_ros" type="pointcloud_to_pcd" respawn="false" output="screen">
+    <remap from="input" to="$(arg pointcloud_topic)"/>
+    <param name="prefix" value="$(arg path)/calib/pcds/out_"/>
+  </node>
+</launch>
