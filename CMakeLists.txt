@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(r3live_tools)
 
-find_package(catkin REQUIRED COMPONENTS livox_camera_calib livox_ros_driver)
+find_package(catkin REQUIRED COMPONENTS)
 
 file(
   MAKE_DIRECTORY

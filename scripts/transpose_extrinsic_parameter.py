@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
-import numpy as np
+"""Export transpose extrinsic parameter from extrinsic.txt."""
+
 import pprint
-import os
 
-""" Export transpose extrinsic parameter
+import numpy as np
+import rospkg
 
-"""
-
-ROOT_DIR = os.path.abspath(os.pardir)
+ROOT_DIR = rospkg.RosPack().get_path('r3live_tools')
+print(ROOT_DIR)
 ext_file = ROOT_DIR + "/calib/extrinsic.txt"
 
 ext = np.loadtxt(ext_file, delimiter=',', unpack=False, max_rows=3)

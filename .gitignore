@@ -1,2 +1,4 @@
 bags/
 calib/
+out/
+mypy.ini

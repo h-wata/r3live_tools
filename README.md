@@ -1,43 +1,96 @@
-## Setup for r3live
+## Preparing for r3live
+
+### Build
+
+```bash
+cd /your/catkin/workspace/src/
+git clone https://github.com/h-wata/r3live_tools
+cd /your/catkin/workspace/
+catkin b r3live_tools
+source devel/setup.bash
+```
 
 ### camera calibration
 
-```
-$ rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.04 image:=/image_color
+[camera_calibration(ROS wiki)](http://wiki.ros.org/camera_calibration)
+
+```bash
+rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.04 image:=/image_color
 ```
 
 ### Record bag files for calibration
-数秒のImageとPointcloudを記録したBagファイルを取得します。
 
-`r3live_tools/bags`にBagファイルを置きます。
+Get some Bag files that record Image and Pointcloud2 topic for a few second.
+Place your bag files for calibration in the `/path/to/r3live_tools/bags`.
 
 ### Create image and pcd files from bag file.
 
-```
-$ roslaunch r3live_tools bag_to_image_and_pcd.launch file_name:=calib-0.bag
+```bash
+$ roslaunch r3live_tools bag_to_image_and_pcd.launch file_name:=__bag_file__.bag
 $ ./scripts/rename_calib_files.py 0
 # export ./calib/images/0.jpg and ./calib/pcds/0.pcd
 ```
-取得したBagファイルの分上記を繰り返します。
 
-### livox_camera_calib
+Repeat for the number of bag files placed.
 
-下記を実行し`common`のファイルパスと `camera`のパラメータを修正します。
+### Livox Lidar and camera calibration
+
+[hku-mars/livox_camera_calib(Github)](https://github.com/hku-mars/livox_camera_calib)
+
+Build `livox_camera_calib` according to the README.md in the link above.
+
+Fix `common` and `camera` parameter in `multi_calib.yaml` by the command below.
+
 ```bash
-$ rosed livox_camera_calib multi_calib.yaml
+rosed livox_camera_calib multi_calib.yaml
 ```
 
-```bash
-$ roslaunch livox_camera_calib multi_calib.launch
+```yaml
+# Data path. adjust them!
+common: # <- Modify to your path.
+    image_path:  "/path/to/r3live_tools/calib/images"
+    pcd_path:  "/path/to/r3live_tools/calib/pcds"
+    result_path:  "/path/to/r3live_tools/calib/extrinsic.txt"
+    data_num: 3
+# Camera Parameters. Adjust them!
+camera: # <- Modify the parameters to those obtained in camera_calibration
+    camera_matrix: [1704.1857 , 0.0,      886.5115,
+                    0.0,     1719.5228,  467.9244,
+                    0.0,     0.0,      1.0     ]
+    dist_coeffs: [-0.0963, 0.0708, 0.0011, -0.0017, 0.000000]
+
+# Calibration Parameters.!
+calib:
+    calib_config_file: "/path/to/livox_camera_calib/config/config_outdoor.yaml"
+    use_rough_calib: true # set true if your initial_extrinsic is bad
 ```
 
-いくつかのファイルでキャリブレーションを実行して、うまく導出されたところで`extrinsic.txt`を採用する。
+Start calibration with the command below.
+
+```bash
+roslaunch livox_camera_calib multi_calib.launch
+```
+
+Run the calibration on several files, and if the image and point cloud fit well adopt the `extrinsic.txt`.
 
 ### Transpose extrinsic parameter
 
-導出された`extrinsic.txt`を転置する必要があるので下記のコマンドを実行する。
-```
-$ ./scripts/transpose_extrinsic_parameter.py
-```
-算出された`camera_ext_R`と`camera_ext_T`のパラメータを`r3live/config/r3live_config.yaml`に転記する。
+The rotation matrix in `extrinsic.txt` needs to be transposed.
 
+```bash
+./scripts/transpose_extrinsic_parameter.py
+# Export
+# camera_ext_R:
+# array([ 0.00483695,  0.0733586 ,  0.997294  , -0.999731  , -0.022263  ,
+#         0.00648639,  0.0226786 , -0.997057  ,  0.0732312 ])
+# camera_ext_T:
+# array([-0.35275 , -0.159217, -0.24572 ])
+```
+
+Copy the calculated parameters onto the `r3live/config/r3live_config.yaml`.
+
+### Please enjoy r3live!!
+
+```
+roslaunch r3live_tools r3live_bag.launch
+```
