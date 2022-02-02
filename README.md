@@ -20,14 +20,14 @@ rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.04 image:=/i
 
 ### Record bag files for calibration
 
-Get some Bag files that record Image and Pointcloud2 topic for a few second.
+Get some Bag files that record `Image` and `Pointcloud2` topic for a few second.
 Place your bag files for calibration in the `/path/to/r3live_tools/bags`.
 
 ### Create image and pcd files from bag file.
 
 ```bash
-$ roslaunch r3live_tools bag_to_image_and_pcd.launch file_name:=__bag_file__.bag
-$ ./scripts/rename_calib_files.py 0
+roslaunch r3live_tools bag_to_image_and_pcd.launch file_name:=__bag_file__.bag image_topic:=/camera/image_color
+./scripts/rename_calib_files.py 0
 # export ./calib/images/0.jpg and ./calib/pcds/0.pcd
 ```
 
@@ -87,7 +87,7 @@ The rotation matrix in `extrinsic.txt` needs to be transposed.
 # array([-0.35275 , -0.159217, -0.24572 ])
 ```
 
-Copy the calculated parameters onto the `r3live/config/r3live_config.yaml`.
+Copy the calculated parameters onto the `r3live/config/r3live_config.yaml` and modify the `camera` parameters to those obtained in camera_calibration.
 
 ### Please enjoy r3live!!
 
