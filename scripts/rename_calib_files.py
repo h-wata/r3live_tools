@@ -15,6 +15,7 @@ import shutil
 import sys
 
 import rospkg
+from PIL import Image
 
 
 def remove_glob(pathname):
@@ -46,6 +47,9 @@ pcd_dir = ROOT_DIR + "/calib/pcds/"
 
 image_files = find_glob(image_dir + 'frame*.jpg')
 shutil.move(image_files[0], image_dir + sys.argv[1] + ".jpg")
+# convert jpg to bmp
+Image.open(image_dir + sys.argv[1] + ".jpg").save(image_dir + sys.argv[1] + ".bmp")
+
 
 pcd_files = find_glob(pcd_dir + "out_*.pcd")
 shutil.move(pcd_files[0], pcd_dir + sys.argv[1] + ".pcd")
